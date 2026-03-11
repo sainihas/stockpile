@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * gfinance CLI — fetch real-time stock quotes from the terminal.
+ * stockpile CLI — fetch real-time stock quotes from the terminal.
  *
  * Usage:
- *   npx gfinance AAPL NVDA MSFT
- *   npx gfinance SHOP:TSE RY:TSE
- *   npx gfinance --json AAPL
- *   npx gfinance --financials AAPL
- *   npx gfinance --indices
+ *   npx stockpile AAPL NVDA MSFT
+ *   npx stockpile SHOP:TSE RY:TSE
+ *   npx stockpile --json AAPL
+ *   npx stockpile --financials AAPL
+ *   npx stockpile --indices
  */
 
 import { batchQuote, financials, indices, GFinanceError } from "../src/index.js";
@@ -36,28 +36,28 @@ for (const arg of args) {
     continue;
   }
   if (arg === "--version" || arg === "-v") {
-    console.log(`gfinance v${VERSION}`);
+    console.log(`stockpile v${VERSION}`);
     process.exit(0);
   }
   if (arg === "--help" || arg === "-h") {
     console.log(`
-gfinance v${VERSION} - Free real-time stock quotes via Google Finance
+stockpile v${VERSION} - Free real-time stock quotes via Google Finance
 
 Usage:
-  gfinance AAPL NVDA MSFT          Fetch quotes for multiple tickers
-  gfinance SHOP:TSE RY:TSE         Specify exchange explicitly
-  gfinance --json AAPL             Output as JSON
-  gfinance --financials AAPL       Quarterly financials for a ticker
-  gfinance --indices               Major market indices
-  gfinance --version               Show version
-  gfinance --help                  Show this help
+  stockpile AAPL NVDA MSFT          Fetch quotes for multiple tickers
+  stockpile SHOP:TSE RY:TSE         Specify exchange explicitly
+  stockpile --json AAPL             Output as JSON
+  stockpile --financials AAPL       Quarterly financials for a ticker
+  stockpile --indices               Major market indices
+  stockpile --version               Show version
+  stockpile --help                  Show this help
 
 Examples:
-  gfinance AAPL
-  gfinance AAPL GOOGL MSFT AMZN META
-  gfinance SHOP:TSE BNS:TSE
-  gfinance --financials NVDA
-  gfinance --indices
+  stockpile AAPL
+  stockpile AAPL GOOGL MSFT AMZN META
+  stockpile SHOP:TSE BNS:TSE
+  stockpile --financials NVDA
+  stockpile --indices
 `);
     process.exit(0);
   }
@@ -100,7 +100,7 @@ async function main() {
 
     if (financialsMode) {
       if (tickers.length === 0) {
-        console.error("Error: Provide a ticker for financials. Example: gfinance --financials AAPL");
+        console.error("Error: Provide a ticker for financials. Example: stockpile --financials AAPL");
         process.exit(1);
       }
       if (tickers.length > 1) {

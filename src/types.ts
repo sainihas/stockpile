@@ -28,6 +28,7 @@ export interface Quote {
   employees: number | null;
   hq: HQLocation | null;
   founded: string | null;
+  sector: string | null;
   kgId: string | null;
   afterHoursPrice: number | null;
   afterHoursChange: number | null;

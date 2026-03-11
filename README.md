@@ -1,91 +1,148 @@
-# gfinance
+# stockpile
 
-Free real-time stock quotes via Google Finance RPC. No API key required.
+Free real-time stock quotes, financials, and market indices via Google Finance. No API key required.
 
 Zero dependencies. Works with Node.js, Bun, and Deno.
 
 ## Install
 
 ```bash
-npm install gfinance
+npm install stockpile
 # or
-bun add gfinance
+bun add stockpile
 ```
 
 ## Quick Start
 
 ```typescript
-import { quote, batchQuote } from 'gfinance';
+import { quote, batchQuote, financials, indices } from 'stockpile';
 
-// Single quote
+// Single quote with real-time price + after-hours
 const aapl = await quote('AAPL');
-console.log(aapl.price, aapl.change, aapl.changePercent);
+console.log(aapl.price, aapl.afterHoursPrice, aapl.sector);
 
-// Batch quotes (single RPC call, up to 40 tickers)
+// Batch quotes (up to 40 tickers per RPC call)
 const quotes = await batchQuote(['AAPL', 'NVDA', 'MSFT', 'GOOGL']);
+
+// Quarterly financials (100+ quarters of revenue, EPS, FCF, margins)
+const fin = await financials('NVDA');
+
+// Major market indices (DJI, S&P 500, NASDAQ, Russell 2000, S&P/TSX)
+const idx = await indices();
 
 // With explicit exchange
 const shop = await quote({ symbol: 'SHOP', exchange: 'TSE' });
-
-// With options
-const q = await quote('AAPL', { timeout: 15000 });
 ```
 
 ## CLI
 
 ```bash
-npx gfinance AAPL NVDA MSFT
-npx gfinance SHOP:TSE RY:TSE
-npx gfinance --json AAPL
+npx stockpile AAPL NVDA MSFT
+npx stockpile SHOP:TSE RY:TSE
+npx stockpile --json AAPL
+npx stockpile --financials NVDA
+npx stockpile --indices
 ```
 
 ## API
 
 ### `quote(ticker, options?): Promise<Quote>`
 
-Fetch a single stock quote.
+Fetch a single stock quote with real-time price, after-hours data, and company fundamentals.
 
-- **ticker** — `string` (e.g. `'AAPL'`) or `{ symbol: string, exchange: string }` (e.g. `{ symbol: 'SHOP', exchange: 'TSE' }`)
+- **ticker** — `string` (e.g. `'AAPL'`) or `{ symbol: string, exchange: string }`
 - **options.timeout** — Request timeout in ms (default: 10000)
 - **options.userAgent** — Custom User-Agent string
 
 ### `batchQuote(tickers, options?): Promise<Quote[]>`
 
-Fetch multiple quotes in a single RPC call. Auto-chunks into batches of 40 for larger lists.
+Fetch multiple quotes in a single RPC call. Auto-chunks into batches of 40.
 
 - **tickers** — Array of `string` or `{ symbol, exchange }` objects
 
-### `Quote` object
+### `financials(ticker, options?): Promise<QuarterlyFinancial[]>`
+
+Fetch quarterly financial statements for a ticker. Returns 100+ quarters with revenue, net income, EPS, FCF, margins, and prior-year comparisons.
+
+### `indices(options?): Promise<MarketIndex[]>`
+
+Fetch major market indices (DJI, S&P 500, NASDAQ, Russell 2000, S&P/TSX).
+
+### `Quote`
 
 ```typescript
 interface Quote {
-  symbol: string;           // 'AAPL'
-  name: string;             // 'Apple Inc'
-  description: string;      // Company description
-  price: number;            // 260.83
-  open: number;             // 257.64
-  high: number;             // 262.48
-  low: number;              // 256.95
-  previousClose: number;    // 259.88
-  change: number;           // 0.95
-  changePercent: number;    // 0.37
-  marketCap: number;        // 3834905043576
-  peRatio: number | null;   // 33.0
-  eps: number | null;       // 7.90
-  beta: number | null;      // 1.10
-  dividendYield: number | null; // 0.004
-  volume: number;           // 12633000
-  avgVolume: number;        // 51490066
-  high52: number;           // 288.61
-  low52: number;            // 169.21
+  symbol: string;
+  name: string;
+  description: string;
+  price: number;
+  open: number;
+  high: number;
+  low: number;
+  previousClose: number;
+  change: number;
+  changePercent: number;
+  marketCap: number;
+  peRatio: number | null;
+  eps: number | null;
+  beta: number | null;
+  dividendYield: number | null;
+  volume: number;
+  avgVolume: number;
+  high52: number;
+  low52: number;
   sharesOutstanding: number;
-  currency: string;         // 'USD'
-  exchange: string;         // 'NASDAQ'
+  currency: string;
+  exchange: string;
+  sector: string | null;
   ceo: string | null;
   employees: number | null;
   hq: HQLocation | null;
   founded: string | null;
   kgId: string | null;
+  afterHoursPrice: number | null;
+  afterHoursChange: number | null;
+  afterHoursChangePercent: number | null;
+}
+```
+
+### `QuarterlyFinancial`
+
+```typescript
+interface QuarterlyFinancial {
+  year: number;
+  quarter: number;
+  revenue: number | null;
+  netIncome: number | null;
+  eps: number | null;
+  peRatio: number | null;
+  operatingIncome: number | null;
+  grossProfit: number | null;
+  totalAssets: number | null;
+  totalEquity: number | null;
+  sharesOutstanding: number | null;
+  fcf: number | null;
+  profitMargin: number | null;
+  operatingMargin: number | null;
+  priorYear: {
+    revenue: number | null;
+    netIncome: number | null;
+    eps: number | null;
+  } | null;
+}
+```
+
+### `MarketIndex`
+
+```typescript
+interface MarketIndex {
+  symbol: string;
+  exchange: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  previousClose: number;
 }
 ```
 
@@ -104,16 +161,9 @@ All errors thrown are instances of `GFinanceError` with a `.code` property:
 
 ## Exchange Auto-Detection
 
-The package includes built-in mappings for:
+Built-in mappings for 500+ NASDAQ, 200+ NYSE, 100+ NYSEARCA ETFs, and 50+ TSE tickers. Unknown tickers try NASDAQ, NYSE, then NYSEARCA automatically.
 
-- **500+ NASDAQ** tickers (tech, biotech, consumer)
-- **200+ NYSE** tickers (financials, industrials, energy)
-- **100+ NYSEARCA** ETFs (SPY, QQQ, sector ETFs, leveraged, crypto, bonds)
-- **50+ TSE** tickers (Canadian banks, energy, mining)
-
-For unknown tickers, the package tries NASDAQ -> NYSE -> NYSEARCA automatically.
-
-You can always override with an explicit exchange:
+Override with an explicit exchange:
 
 ```typescript
 await quote({ symbol: 'SAP', exchange: 'ETR' });  // Frankfurt
@@ -122,7 +172,7 @@ await quote({ symbol: '7203', exchange: 'TYO' });  // Toyota on Tokyo
 
 ## Disclaimer
 
-This package uses Google Finance's internal RPC endpoint. It is **not** an official Google API. Use at your own risk. This is intended for personal/educational use. Google may change or restrict this endpoint at any time.
+This package uses Google Finance's internal RPC endpoint. It is **not** an official Google API. Use at your own risk. Google may change or restrict this endpoint at any time.
 
 ## License
 

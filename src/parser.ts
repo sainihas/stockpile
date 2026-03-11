@@ -343,6 +343,7 @@ export function buildQuote(
     const beta = numOrNull(f[20]);
     const sharesOutstanding = num(f[21]);
     const exchangeName = priceInfo?.exchange || str(f[24]) || exchangeFallback;
+    const sector = f.length > 71 && typeof f[71] === "string" ? f[71] : null;
 
     return {
       symbol: (priceInfo?.symbol || symbolFallback).toUpperCase(),
@@ -370,6 +371,7 @@ export function buildQuote(
       ceo,
       employees,
       hq,
+      sector,
       founded,
       kgId: priceInfo?.kgId || kgId,
       afterHoursPrice: priceInfo?.afterHoursPrice ?? null,
@@ -406,6 +408,7 @@ export function buildQuote(
     employees: null,
     hq: null,
     founded: null,
+    sector: null,
     kgId: priceInfo?.kgId || null,
     afterHoursPrice: priceInfo?.afterHoursPrice ?? null,
     afterHoursChange: priceInfo?.afterHoursChange ?? null,

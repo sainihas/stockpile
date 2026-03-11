@@ -1,5 +1,5 @@
 {
-  "name": "gfinance",
+  "name": "stockpile",
   "version": "2.0.0",
   "description": "Free real-time stock quotes, financials, and market indices via Google Finance. No API key required.",
   "license": "MIT",
@@ -21,7 +21,7 @@
     }
   },
   "bin": {
-    "gfinance": "./dist/esm/bin/cli.js"
+    "stockpile": "./dist/esm/bin/cli.js"
   },
   "files": [
     "dist",
@@ -30,6 +30,14 @@
     "LICENSE",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sainihas/stockpile.git"
+  },
+  "homepage": "https://github.com/sainihas/stockpile",
+  "bugs": {
+    "url": "https://github.com/sainihas/stockpile/issues"
+  },
   "scripts": {
     "build": "bun run build:esm && bun run build:cjs",
     "build:esm": "tsc -p tsconfig.esm.json && chmod +x dist/esm/bin/cli.js",
@@ -38,6 +46,7 @@
     "test": "echo 'No test suite yet'"
   },
   "keywords": [
+    "stockpile",
     "stock",
     "quote",
     "google-finance",

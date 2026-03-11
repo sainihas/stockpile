@@ -1,0 +1,59 @@
+{
+  "name": "gfinance",
+  "version": "2.0.0",
+  "description": "Free real-time stock quotes, financials, and market indices via Google Finance. No API key required.",
+  "license": "MIT",
+  "author": "orbi",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/src/index.js",
+  "types": "./dist/esm/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/src/index.d.ts",
+        "default": "./dist/esm/src/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "bin": {
+    "gfinance": "./dist/esm/bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "bin",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun run build:esm && bun run build:cjs",
+    "build:esm": "tsc -p tsconfig.esm.json && chmod +x dist/esm/bin/cli.js",
+    "build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "prepublishOnly": "bun run build",
+    "test": "echo 'No test suite yet'"
+  },
+  "keywords": [
+    "stock",
+    "quote",
+    "google-finance",
+    "market-data",
+    "real-time",
+    "free",
+    "no-api-key",
+    "finance",
+    "stocks",
+    "ticker"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "typescript": "^5.7.0"
+  }
+}

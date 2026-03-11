@@ -124,4 +124,4 @@ export function resolveExchange(symbol: string): string | null {
 /**
  * Fallback exchanges to try in order when the ticker is not in the built-in map.
  */
-export const FALLBACK_EXCHANGES = ["NASDAQ", "NYSE", "NYSEARCA"] as const;
+export const FALLBACK_EXCHANGES = ["NASDAQ", "NYSE", "NYSEARCA", "TSE", "OTCMKTS"] as const;

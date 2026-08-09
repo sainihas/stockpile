@@ -25,7 +25,9 @@ many pushes as it takes — finishing the work is not what takes it out of draft
 Only when Sai asks for it to be merged, and in this order:
 
 1. `gh pr ready <n>` — take it out of draft.
-2. `gh pr checks <n> --watch` — wait for the run to finish.
+2. `gh pr checks <n> --watch` — wait for the run to finish. Skip it while this repo has
+   no `pull_request` workflow (see below): with nothing to report `gh` exits 1 with `no
+   checks reported on the '<branch>' branch`, which is not a failing check.
 3. `gh pr merge <n> --squash --delete-branch` — merge only on green. If a check fails,
    fix it on the branch, push, and go back to step 2.
 
